@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net"
-	"os"
 )
 
 func server(addr string) error {
@@ -23,18 +22,21 @@ func server(addr string) error {
 			return err
 		}
 		go func(conn net.Conn) {
+			request := make([]byte, 0)
 			for {
 				defer conn.Close()
-				buffer := make([]byte, 4096)
+				buffer := make([]byte, 8)
 				n, err := conn.Read(buffer)
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(1)
 				}
-				fmt.Println(string(buffer[:n]))
+				request = append(request, buffer[:n]...)
+				requestLine := ParseRequestLine(string(request))
+				if requestLine != nil {
+					fmt.Println(requestLine)
+					break
+				}
 			}
 		} (conn)
 	}
-
-	return nil
 }
