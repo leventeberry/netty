@@ -23,12 +23,16 @@ func server(addr string) error {
 		}
 		go func(conn net.Conn) {
 			request := make([]byte, 0)
+			defer conn.Close()
 			for {
-				defer conn.Close()
-				buffer := make([]byte, 8)
+				buffer := make([]byte, 2)
 				n, err := conn.Read(buffer)
 				if err != nil {
 					fmt.Println(err)
+					break
+				}
+				if n == 0 {
+					break
 				}
 				request = append(request, buffer[:n]...)
 				requestLine := ParseRequestLine(string(request))

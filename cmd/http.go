@@ -18,6 +18,7 @@ func ParseRequestLine(request string) *RequestLine {
 	}
 
 	lines := strings.Split(request, "\r\n")
+	fmt.Println("lines", lines)
 	for i, line := range lines {
 		if i == 0 {
 			parts := strings.Split(line, " ")
